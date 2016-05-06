@@ -17,6 +17,6 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
 ]
 
-ROOT_URLCONF = 'easycart.urls'
+ROOT_URLCONF = 'tests.urls'
 
 SECRET_KEY = 'dummy-key'
