@@ -11,10 +11,7 @@ class TestViews(TestCase):
 
     def setUp(self):
         fill_db()
-        # Beware that client.session is a property that always returns
-        # a new instance of SessionStore. It must be stored in a variable,
-        # if there's need to modify the session.
-        self.session = set_up_session(self.client.session)
+        set_up_session(self.client.session)
 
     def check_response(self, url_name, post_data, expected):
         url = reverse(url_name)
