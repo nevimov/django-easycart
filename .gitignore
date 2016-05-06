@@ -1,0 +1,15 @@
+*~
+*.swp
+*.py[cod]
+__pycache__
+
+/temp/
+/venv/
+
+# Sphinx
+/docs/_build
+
+# Setuptools
+*.egg-info
+/build/
+/dist/
