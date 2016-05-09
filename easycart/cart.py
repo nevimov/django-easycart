@@ -136,7 +136,7 @@ class BaseCart:
     """Base class representing the user cart.
 
     In the simplest case, you just subclass it in your views and
-    override the :meth:`get_queryset()` method.
+    override the :meth:`get_queryset` method.
 
     If multi-table inheritance is used to store information about
     items, then you may also want to override :meth:`process_object`
