@@ -163,12 +163,7 @@ class BaseCart:
 
     """
     Item = BaseItem
-    """Class to use to represent cart items.
-
-    If you wish to use another item class, change this reference in
-    your cart subclass.
-
-    """
+    """Class to use to represent cart items."""
     _stale_pks = None
 
     def __init__(self, request):
