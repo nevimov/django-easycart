@@ -432,8 +432,8 @@ class BaseCart:
             A map between the `session_items` keys and instances of
             :attr:`Item`. For example::
 
-                {'1': BaseItem(obj=Item(pk=1), quantity=5),
-                 '3': BaseItem(obj=Item(pk=3), quantity=2)}
+                {'1': <CartItem: obj=foo, quantity=5>,
+                 '3': <CartItem: obj=bar, quantity=2>}
 
         """
         pks = list(session_items.keys())
