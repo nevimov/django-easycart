@@ -268,14 +268,26 @@ class BaseCart:
         ----------
         sort_key : func
             A function to customize the list order, same as the 'key'
-            argument to the built-in :func:`sorted()`.
+            argument to the built-in :func:`sorted`.
         reverse: bool
-            Whether the sort order should be reversed.
+            If set to True, the sort order will be reversed.
 
         Returns
         -------
         list
             List of :attr:`Item` instances.
+
+        Examples
+        --------
+        >>> cart = Cart(request)
+        >>> cart.list_items(lambda item: item.obj.name)
+        [<CartItem: obj=bar, quantity=3>,
+         <CartItem: obj=foo, quantity=1>,
+         <CartItem: obj=nox, quantity=5>]
+        >>> cart.list_items(lambda item: item.quantity, reverse=True)
+        [<CartItem: obj=nox, quantity=5>,
+         <CartItem: obj=bar, quantity=3>,
+         <CartItem: obj=foo, quantity=1>]
 
         """
         items = list(self.items.values())
