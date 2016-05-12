@@ -64,16 +64,22 @@ class BaseItem:
 
     """
 
-    def __init__(self, obj, quantity=1):
+    def __init__(self, obj, quantity=1, **kwargs):
         self._quantity = self.clean_quantity(quantity)
         self.price = getattr(obj, self.PRICE_ATTR)
         self.obj = obj
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        self._kwargs = kwargs
 
     def __eq__(self, other):
-        return self.obj == other.obj and self.quantity == other.quantity
+        return self.__dict__ == other.__dict__
 
     def __repr__(self):
-        return '<CartItem: obj={}, quantity={}>'.format(self.obj, self.quantity)
+        main_args = 'obj={}, quantity={}'.format(self.obj, self.quantity)
+        extra_args = ['{}={}'.format(k, getattr(self, k)) for k in self._kwargs]
+        args_repr = ', '.join([main_args] + extra_args)
+        return  '<CartItem: ' + args_repr + '>'
 
     @property
     def quantity(self):
@@ -176,7 +182,7 @@ class BaseCart:
         if self._stale_pks:
             self.handle_stale_items(self._stale_pks)
 
-    def add(self, pk, quantity=1):
+    def add(self, pk, quantity=1, **kwargs):
         """Add an item to the cart.
 
         If the item is already in the cart, then its quantity will be
@@ -188,6 +194,9 @@ class BaseCart:
             The primary key of the item.
         quantity : int-convertible
             A number of units of to add.
+        **kwargs
+            Extra keyword arguments to pass to the item class
+            constructor.
 
         Raises
         ------
@@ -207,7 +216,7 @@ class BaseCart:
                 raise ItemNotInDatabase("database doesn't have an item with "
                                         "pk {}".format(pk))
             obj = self.process_object(obj)
-            self.items[pk] = self.Item(obj, quantity)
+            self.items[pk] = self.Item(obj, quantity, **kwargs)
         self.update()
 
     def change_quantity(self, pk, quantity):
@@ -442,9 +451,8 @@ class BaseCart:
         process_object = self.process_object
         for obj in self.get_queryset(pks):
             pk = str(obj.pk)
-            quantity = session_items[pk]
             obj = process_object(obj)
-            items[pk] = Item(obj, quantity)
+            items[pk] = Item(obj, **session_items[pk])
         if len(items) < len(session_items):
             self._stale_pks = set(session_items).difference(items)
         return items
@@ -467,7 +475,7 @@ class BaseCart:
         session = self.request.session
         session_items = {}
         for pk, item in self.items.items():
-            session_items[pk] = item.quantity
+            session_items[pk] = dict(quantity=item.quantity, **item._kwargs)
         session_data = session[session_key]
         session_data['items'] = session_items
         session_data['itemCount'] = self.item_count
@@ -531,5 +539,4 @@ class ItemNotInCart(CartException):
     def __init__(self, pk, *args):  #pylint:disable=super-init-not-called
         msg = self.msg_template.format(pk)
         self.args = (msg, *args)
-
 

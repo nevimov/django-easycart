@@ -12,7 +12,12 @@ SESSION_KEY = 'easycart'
 SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
 DUMMY_SESSION_DATA = {
-    'items': {'1': 10, '2': 12, '3': 6, '4': 1},
+    'items': {
+        '1': {'quantity': 10},
+        '2': {'quantity': 12},
+        '3': {'quantity': 6},
+        '4': {'quantity': 1},
+    },
     'itemCount': 4,
     'totalPrice': '101.00',
 }

@@ -36,6 +36,13 @@ class TestBaseItem(TestCase):
         self.assertEqual(item.quantity, 3)
         self.assertEqual(item.total, 300)
 
+    def test_extra_kwargs_are_used_to_set_new_attributes(self):
+        item = BaseItem(self.obj, quantity=1, foo='foo', bar='bar')
+        self.assertTrue(hasattr(item, 'foo'))
+        self.assertTrue(hasattr(item, 'bar'))
+        self.assertEqual(item.foo, 'foo')
+        self.assertEqual(item.bar, 'bar')
+
     def test_constructor_cleans_quantity(self):
         with patch.object(BaseItem, 'clean_quantity') as mock_clean_quantity:
             mock_clean_quantity.return_value = 'cleaned'
@@ -81,10 +88,28 @@ class TestBaseItem(TestCase):
         self.assertEqual(item_1, item_1)
         self.assertEqual(item_1, item_2)
         self.assertNotEqual(item_1, item_3)
+        # Test items with extra data
+        item_4 = BaseItem(self.obj, foo='bar')
+        item_5 = BaseItem(self.obj, foo='bar')
+        item_6 = BaseItem(self.obj, foo='nox')
+        self.assertEqual(item_4, item_4)
+        self.assertEqual(item_4, item_5)
+        self.assertNotEqual(item_4, item_6)
 
     def test__repr__(self):
         item = BaseItem(self.obj, 1)
         self.assertEqual(repr(item), '<CartItem: obj=dummy_item, quantity=1>')
+        # Ensure that extra keyword arguments are handled correctly
+        item = BaseItem(self.obj, 1, foo='bar')
+        self.assertEqual(repr(item),
+                         '<CartItem: obj=dummy_item, quantity=1, foo=bar>')
+        # The repr should change with the attributes
+        item.quantity = 2
+        self.assertEqual(repr(item),
+                         '<CartItem: obj=dummy_item, quantity=2, foo=bar>')
+        item.foo = 'nox'
+        self.assertEqual(repr(item),
+                         '<CartItem: obj=dummy_item, quantity=2, foo=nox>')
 
 
 class TestBaseCart(TestCase):
@@ -116,7 +141,7 @@ class TestBaseCart(TestCase):
         expected_items = {}
         for item in cart.items.values():
             pk = str(item.obj.pk)
-            expected_items[pk] = item.quantity
+            expected_items[pk] = dict(quantity=item.quantity, **item._kwargs)
         self.assertEqual(cart_session['items'], expected_items)
 
     def test_initial_cart_state_with_empty_session(self):
@@ -149,6 +174,35 @@ class TestBaseCart(TestCase):
         self.assertEqual(cart.item_count, 3)
         self.assertEqual(cart.total_price, 71)
         self.assert_session_reflects_cart_state()
+
+    def test_items_with_extra_data_are_properly_handled(self):
+        extra_data_list = [
+            {'foo': 'foo'},
+            {'foo': 'foo', 'bar': 'bar'},
+            {'foo': 'foo', 'bar': 'bar', 'nox': 'nox'},
+        ]
+        for extra_data in extra_data_list:
+            with self.subTest(extra_data=extra_data):
+                obj = Book.objects.create(name='DoesNotMatter', price=1)
+                cart_item = BaseItem(obj, quantity=1, **extra_data)
+                pk = str(obj.pk)
+                self.cart.items[pk] = cart_item
+                # Check that the extra data are saved to the session
+                self.cart.update()
+                session_item = self.cart_session['items'][pk]
+                self.assertEqual(session_item, dict(quantity=1, **extra_data))
+                # Ensure that we get the same items from these session data
+                original_cart = self.cart
+                new_cart = Cart(self.request)
+                self.assertEqual(new_cart.items, original_cart.items)
+
+    def test_add_passes_kwargs_to_item_class_if_item_is_not_in_cart(self):
+        item = Book.objects.create(name='foo', price=999)
+        cart = self.cart
+        MockItem = Mock(wraps=cart.Item)
+        with patch.object(cart, 'Item', MockItem):
+            cart.add(item.pk, quantity=1, foo='bar', baz='nox')
+            MockItem.assert_called_once_with(item, 1, foo='bar', baz='nox')
 
     def test_add_item_that_is_not_in_cart(self):
         cart = self.cart
@@ -328,4 +382,5 @@ class TestBaseCart(TestCase):
     def test_items_are_counted_correctly(self):
         self.assertEqual(self.cart.count_items(unique=True), 4)
         self.assertEqual(self.cart.count_items(unique=False), 29)
+
 
