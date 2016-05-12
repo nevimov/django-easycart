@@ -138,9 +138,8 @@ class TestCart(TestCase):
             }
         )
 
-    def test_session_saves_correctly(self):
+    def test_update_does_not_corrupt_session(self):
         self.cart.update()
-        self.request.session.save()
         self.assertEqual(self.cart_session, DUMMY_SESSION_DATA)
 
     def test_update_after_direct_modification_of_items(self):
