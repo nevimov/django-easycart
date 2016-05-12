@@ -24,7 +24,7 @@ from tests.models import Item, Book, Magazine
 request_factory = RequestFactory()
 
 
-class TestCartItem(TestCase):
+class TestBaseItem(TestCase):
 
     def setUp(self):
         self.obj = Item(pk=1, name='dummy_item', price=100)
@@ -87,7 +87,7 @@ class TestCartItem(TestCase):
         self.assertEqual(repr(item), '<CartItem: obj=dummy_item, quantity=1>')
 
 
-class TestCart(TestCase):
+class TestBaseCart(TestCase):
 
     def setUp(self):
         fill_db()
