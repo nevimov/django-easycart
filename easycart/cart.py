@@ -377,7 +377,7 @@ class BaseCart:
         below::
 
             def get_queryset(self, pks):
-                return Items.objects.filter(pk__in=pks)
+                return Item.objects.filter(pk__in=pks)
 
         """
 
