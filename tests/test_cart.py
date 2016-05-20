@@ -199,8 +199,8 @@ class TestBaseCart(TestCase):
     def test_add_passes_kwargs_to_item_class_if_item_is_not_in_cart(self):
         item = Book.objects.create(name='foo', price=999)
         cart = self.cart
-        MockItem = Mock(wraps=cart.Item)
-        with patch.object(cart, 'Item', MockItem):
+        MockItem = Mock(wraps=cart.item_class)
+        with patch.object(cart, 'item_class', MockItem):
             cart.add(item.pk, quantity=1, foo='bar', baz='nox')
             MockItem.assert_called_once_with(item, 1, foo='bar', baz='nox')
 

@@ -156,7 +156,7 @@ class BaseCart:
     ----------
     items : dict
         A map between item primary keys (converted to strings) and
-        corresponding instances of :attr:`Item`.
+        corresponding instances of :attr:`item_class`.
         If, for some reason, you need to modify `items` directly,
         don't forget to call :meth:`update` afterwards.
     item_count : int
@@ -168,7 +168,7 @@ class BaseCart:
         A reference to the `request` used to instantiate the cart.
 
     """
-    Item = BaseItem
+    item_class = BaseItem
     """Class to use to represent cart items."""
     _stale_pks = None
 
@@ -216,7 +216,7 @@ class BaseCart:
                 raise ItemNotInDatabase("database doesn't have an item with "
                                         "pk {}".format(pk))
             obj = self.process_object(obj)
-            self.items[pk] = self.Item(obj, quantity, **kwargs)
+            self.items[pk] = self.item_class(obj, quantity, **kwargs)
         self.update()
 
     def change_quantity(self, pk, quantity):
@@ -284,7 +284,7 @@ class BaseCart:
         Returns
         -------
         list
-            List of :attr:`Item` instances.
+            List of :attr:`item_class` instances.
 
         Examples
         --------
@@ -401,7 +401,7 @@ class BaseCart:
         -------
         item model
             A model instance that will be used as the `obj` argument to
-            :attr:`Item`.
+            :attr:`item_class`.
 
         """
         return obj
@@ -439,7 +439,7 @@ class BaseCart:
         -------
         dict
             A map between the `session_items` keys and instances of
-            :attr:`Item`. For example::
+            :attr:`item_class`. For example::
 
                 {'1': <CartItem: obj=foo, quantity=5>,
                  '3': <CartItem: obj=bar, quantity=2>}
@@ -447,12 +447,12 @@ class BaseCart:
         """
         pks = list(session_items.keys())
         items = {}
-        Item = self.Item
+        item_class = self.item_class
         process_object = self.process_object
         for obj in self.get_queryset(pks):
             pk = str(obj.pk)
             obj = process_object(obj)
-            items[pk] = Item(obj, **session_items[pk])
+            items[pk] = item_class(obj, **session_items[pk])
         if len(items) < len(session_items):
             self._stale_pks = set(session_items).difference(items)
         return items
