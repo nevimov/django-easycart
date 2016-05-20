@@ -26,18 +26,7 @@ cart_module, cart_class = settings.EASYCART_CART_CLASS.rsplit('.', 1)
 Cart = getattr(import_module(cart_module), cart_class)
 
 
-class CartView(View):
-    """Base class for views operating the cart."""
-    http_method_names = ['post']
-
-    def get_post_data(self, key):
-        try:
-            return self.request.POST[key]
-        except KeyError:
-            raise KeyError("request.POST doesn't contain key '{}'".format(key))
-
-
-class AddItem(CartView):
+class AddItem(View):
     """Add an item to the cart.
 
     This view expects `request.POST` to contain:
@@ -54,13 +43,13 @@ class AddItem(CartView):
 
     def post(self, request):
         cart = Cart(request)
-        pk = self.get_post_data('pk')
-        quantity = self.get_post_data('quantity')
+        pk = request.POST['pk']
+        quantity = request.POST['quantity']
         cart.add(pk, quantity)
         return cart.encode()
 
 
-class ChangeItemQuantity(CartView):
+class ChangeItemQuantity(View):
     """Change the quantity of an item.
 
     This view expects `request.POST` to contain:
@@ -77,13 +66,13 @@ class ChangeItemQuantity(CartView):
 
     def post(self, request):
         cart = Cart(request)
-        pk = self.get_post_data('pk')
-        quantity = self.get_post_data('quantity')
+        pk = request.POST['pk']
+        quantity = request.POST['quantity']
         cart.change_quantity(pk, quantity)
         return cart.encode()
 
 
-class RemoveItem(CartView):
+class RemoveItem(View):
     """Remove an item from the cart.
 
     Expects `request.POST` to contain key *pk*. The associated value
@@ -93,12 +82,12 @@ class RemoveItem(CartView):
 
     def post(self, request):
         cart = Cart(request)
-        pk = self.get_post_data('pk')
+        pk = request.POST['pk']
         cart.remove(pk)
         return cart.encode()
 
 
-class EmptyCart(CartView):
+class EmptyCart(View):
     """Remove all items from the cart."""
 
     def post(self, request):
