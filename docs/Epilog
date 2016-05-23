@@ -1,0 +1,6 @@
+.. |br| raw:: html
+
+   <br>
+
+
+.. _multi-table inheritance: https://docs.djangoproject.com/en/dev/topics/db/models/#multi-table-inheritance
