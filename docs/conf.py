@@ -56,7 +56,8 @@ author = 'nevimov'
 # built documents.
 #
 # The short X.Y version.
-version = '0.1.0'
+with open(os.path.abspath('../VERSION')) as version_file:
+    version = version_file.read().strip()
 # The full version, including alpha/beta/rc tags.
 release = version
 
