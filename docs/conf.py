@@ -18,6 +18,9 @@ import os
 
 import django
 
+# Make sure we get the version of this copy of django-easycart
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
 django.setup()
 
