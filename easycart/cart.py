@@ -538,5 +538,5 @@ class ItemNotInCart(CartException):
 
     def __init__(self, pk, *args):  #pylint:disable=super-init-not-called
         msg = self.msg_template.format(pk)
-        self.args = (msg, *args)
+        self.args = (msg,) + args
 
