@@ -17,6 +17,6 @@ By installing this app you get:
 
 Resources
 ---------
-* Docs: https://django-easycart.readthedocs.io/
+* Docs: http://pythonhosted.org/django-easycart/
 * Source Code: https://github.com/nevimov/django-easycart
 * Issue Tracker: https://github.com/nevimov/django-easycart/issues
