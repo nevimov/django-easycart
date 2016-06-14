@@ -2,7 +2,7 @@ Welcome to django-easycart's documentation!
 ===========================================
 
 .. include:: ../README.rst
-   :start-line: 4
+   :start-line: 3
 
 .. toctree::
    :maxdepth: 2
