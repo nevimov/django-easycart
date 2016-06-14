@@ -1,0 +1,4 @@
+# Pip requirements file for ReadTheDocs
+
+Django
+-r requirements-tox.txt
