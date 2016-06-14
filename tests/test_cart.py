@@ -264,7 +264,7 @@ class TestBaseCart(TestCase):
         def test(quantity):
             with self.assertRaises(InvalidItemQuantity):
                 cart.change_quantity('1', quantity)
-            self.mock_update.assert_not_called()
+            self.assertFalse(self.mock_update.called)
             self.assertEqual(cart.items, orig_items)
             self.assert_session_reflects_cart_state()
 
@@ -275,7 +275,7 @@ class TestBaseCart(TestCase):
     def test_change_item_quantity_of_item_missing_from_cart(self):
         with self.assertRaises(ItemNotInCart):
             self.cart.change_quantity('no-such-item-in-cart', 10)
-        self.mock_update.assert_not_called()
+        self.assertFalse(self.mock_update.called)
 
     def test_remove_item_present_in_cart(self):
         cart = self.cart
@@ -291,7 +291,7 @@ class TestBaseCart(TestCase):
         orig_items = deepcopy(cart.items)
         with self.assertRaises(ItemNotInCart):
             self.cart.remove('999')
-        self.mock_update.assert_not_called()
+        self.assertFalse(self.mock_update.called)
         self.assertEqual(cart.items, orig_items)
 
     def test_empty_cart(self):
@@ -333,7 +333,7 @@ class TestBaseCart(TestCase):
     def test_stale_item_handler_is_not_called_if_cart_has_no_stale_items(self):
         with patch.object(Cart, 'handle_stale_items') as mock_handler:
             cart = Cart(self.request)  #pylint:disable=unused-variable
-        mock_handler.assert_not_called()
+        self.assertFalse(mock_handler.called)
 
     def test_stale_item_handler_is_called_if_cart_has_stale_items(self):
         Book.objects.get(pk=1).delete()
@@ -368,9 +368,9 @@ class TestBaseCart(TestCase):
             sort = Mock()
 
         list_items = self.cart.list_items
-        with patch('easycart.cart.list', mock_list):
+        with patch('easycart.cart.list', mock_list, create=True):
             list_items()  # By default the list shouldn't be sorted
-            mock_list.sort.assert_not_called()
+            self.assertFalse(mock_list.sort.called)
             list_items(sort_key=sort_key, reverse=True)
             mock_list.sort.assert_called_once_with(key=sort_key, reverse=True)
 
