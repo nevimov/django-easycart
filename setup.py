@@ -6,8 +6,13 @@ if __name__ != '__main__':
 
 root_dir = path.abspath(path.dirname(__file__))
 
-with open(path.join(root_dir, 'README.rst'), encoding='utf-8') as readme_file:
-    long_description = readme_file.read()
+try:
+    with open(path.join(root_dir, 'README.rst'), encoding='utf-8') as readme_file:
+        long_description = readme_file.read()
+except:
+    import codecs
+    with codecs.open(path.join(root_dir, 'README.rst'), encoding='utf-8') as readme_file:
+        long_description = readme_file.read()
 
 with open(path.join(root_dir, 'VERSION')) as version_file:
     version = version_file.read().strip()
