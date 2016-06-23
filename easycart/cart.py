@@ -14,7 +14,7 @@ __all__ = [
 session_key = getattr(settings, 'EASYCART_SESSION_KEY', 'easycart')
 
 
-class BaseItem:
+class BaseItem(object):
     """Base class representing the cart item.
 
     Parameters
@@ -138,7 +138,7 @@ class BaseItem:
         return _clean_quantity(quantity, self.max_quantity)
 
 
-class BaseCart:
+class BaseCart(object):
     """Base class representing the user cart.
 
     In the simplest case, you just subclass it in your views and
