@@ -1,7 +1,10 @@
 """Tests for easycart.cart."""
 import json
 from copy import deepcopy
-from unittest.mock import Mock, patch
+try:
+    from unittest.mock import Mock, patch
+except ImportError:
+    from mock import Mock, patch
 
 from django.test import TestCase, RequestFactory
 
@@ -176,25 +179,24 @@ class TestBaseCart(TestCase):
         self.assert_session_reflects_cart_state()
 
     def test_items_with_extra_data_are_properly_handled(self):
-        extra_data_list = [
-            {'foo': 'foo'},
-            {'foo': 'foo', 'bar': 'bar'},
-            {'foo': 'foo', 'bar': 'bar', 'nox': 'nox'},
-        ]
-        for extra_data in extra_data_list:
-            with self.subTest(extra_data=extra_data):
-                obj = Book.objects.create(name='DoesNotMatter', price=1)
-                cart_item = BaseItem(obj, quantity=1, **extra_data)
-                pk = str(obj.pk)
-                self.cart.items[pk] = cart_item
-                # Check that the extra data are saved to the session
-                self.cart.update()
-                session_item = self.cart_session['items'][pk]
-                self.assertEqual(session_item, dict(quantity=1, **extra_data))
-                # Ensure that we get the same items from these session data
-                original_cart = self.cart
-                new_cart = Cart(self.request)
-                self.assertEqual(new_cart.items, original_cart.items)
+
+        def test(extra_data):
+            obj = Book.objects.create(name='DoesNotMatter', price=1)
+            cart_item = BaseItem(obj, quantity=1, **extra_data)
+            pk = str(obj.pk)
+            self.cart.items[pk] = cart_item
+            # Check that the extra data are saved to the session
+            self.cart.update()
+            session_item = self.cart_session['items'][pk]
+            self.assertEqual(session_item, dict(quantity=1, **extra_data))
+            # Ensure that we get the same items from these session data
+            original_cart = self.cart
+            new_cart = Cart(self.request)
+            self.assertEqual(new_cart.items, original_cart.items)
+
+        test({'foo': 'foo'})
+        test({'foo': 'foo', 'bar': 'bar'})
+        test({'foo': 'foo', 'bar': 'bar', 'nox': 'nox'})
 
     def test_add_passes_kwargs_to_item_class_if_item_is_not_in_cart(self):
         item = Book.objects.create(name='foo', price=999)

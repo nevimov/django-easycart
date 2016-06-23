@@ -12,7 +12,7 @@ class Item(models.Model):
     def save(self, *args, **kwargs):
         if not self.category:
             self.category = self.__class__.__name__.lower()
-        super().save(*args, **kwargs)
+        super(Item, self).save(*args, **kwargs)
 
 
 class Book(Item):
