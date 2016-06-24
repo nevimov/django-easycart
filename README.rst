@@ -12,7 +12,7 @@ By installing this app you get:
 * A handy set of reusable components (views, urls and a context processor) for
   the most common tasks. These components are completely optional.
 
-**Requirements**: Python 3.4+ Django 1.8+
+**Requirements**: Python 2.7+/3.4+ Django 1.8+
 
 
 Resources
