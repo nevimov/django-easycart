@@ -7,30 +7,32 @@ import django
 from django.conf import settings
 from django.test.utils import get_runner
 
-TEST_LABEL_HELP = """\
-A test label can take one of four forms:
+os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
+django.setup()
+
+HELP_TEST_LABEL = """\
+A test label can take one of the four forms:
 - path.to.test_module.TestCase.test_method
   run a single test method in a test case
 - path.to.test_module.TestCase
-  run all the test methods in a test case
+  run all test methods in a test case
 - path.to.module
   search for and run all tests in the named Python
   package or module
 - path/to/directory
   search for and run all tests below the named directory
 """
+HELP_FAILFAST = 'stop after the first test failure is detected'
+HELP_REVERSE = 'sort test cases in the opposite execution order'
+HELP_VERBOSITY = 'the amount of notification and debug information '
 
-os.environ['DJANGO_SETTINGS_MODULE'] = 'tests.settings'
-django.setup()
 parser = argparse.ArgumentParser(formatter_class=argparse.RawTextHelpFormatter)
-parser.add_argument('test_labels', metavar='test_label', nargs='*',
-                    help=TEST_LABEL_HELP)
-parser.add_argument('--failfast', action='store_true',
-                    help='stop after the first test failure is detected')
-parser.add_argument('-r', '--reverse', action='store_true',
-                    help='sort test cases in the opposite execution order')
-parser.add_argument('-v', '--verbosity', choices=(0, 1, 2), default=1, type=int,
-                    help='the amount of notification and debug information ')
+add_arg = parser.add_argument
+add_arg('test_labels', metavar='test_label', nargs='*', help=HELP_TEST_LABEL)
+add_arg('-f', '--failfast', action='store_true', help=HELP_FAILFAST)
+add_arg('-r', '--reverse', action='store_true', help=HELP_REVERSE)
+add_arg('-v', '--verbosity', choices=(0, 1, 2), default=1, type=int,
+        help=HELP_VERBOSITY)
 args = parser.parse_args()
 
 TestRunner = get_runner(settings)
