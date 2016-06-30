@@ -8,6 +8,10 @@ __all__ = [
     'InvalidItemQuantity',
     'ItemNotInCart',
     'ItemNotInDatabase',
+    'NegativeItemQuantity',
+    'NonConvertibleItemQuantity',
+    'TooLargeItemQuantity',
+    'ZeroItemQuantity',
 ]
 
 # Key in request.session under which to store the cart data.
@@ -36,9 +40,10 @@ class BaseItem(object):
 
     Raises
     ------
-    InvalidItemQuantity
-        Argument `quantity` doesn't pass the validation by the
-        :meth:`clean_quantity` method.
+    NegativeItemQuantity
+    NonConvertibleItemQuantity
+    TooLargeItemQuantity
+    ZeroItemQuantity
 
     """
     PRICE_ATTR = 'price'
@@ -130,9 +135,10 @@ class BaseItem(object):
 
         Raises
         ------
-        InvalidItemQuantity
-            The quantity can't be cleaned due to one of the reasons
-            listed above.
+        NegativeItemQuantity
+        NonConvertibleItemQuantity
+        TooLargeItemQuantity
+        ZeroItemQuantity
 
         """
         return _clean_quantity(quantity, self.max_quantity)
@@ -201,7 +207,10 @@ class BaseCart(object):
         Raises
         ------
         ItemNotInDatabase
-            Database doesn't contain an item with the given primary key.
+        NegativeItemQuantity
+        NonConvertibleItemQuantity
+        TooLargeItemQuantity
+        ZeroItemQuantity
 
         """
         pk = str(pk)
@@ -213,8 +222,7 @@ class BaseCart(object):
             try:
                 obj = queryset[0]
             except IndexError:
-                raise ItemNotInDatabase("database doesn't have an item with "
-                                        "pk {}".format(pk))
+                raise ItemNotInDatabase(pk=pk)
             obj = self.process_object(obj)
             self.items[pk] = self.item_class(obj, quantity, **kwargs)
         self.update()
@@ -232,8 +240,10 @@ class BaseCart(object):
         Raises
         ------
         ItemNotInCart
-            Attempting to change the quantity of an item that is not in
-            the cart.
+        NegativeItemQuantity
+        NonConvertibleItemQuantity
+        TooLargeItemQuantity
+        ZeroItemQuantity
 
         """
         pk = str(pk)
@@ -255,7 +265,6 @@ class BaseCart(object):
         Raises
         ------
         ItemNotInCart
-            Attempting to delete an item that is not in the cart.
 
         """
         pk = str(pk)
@@ -511,32 +520,58 @@ def _clean_quantity(quantity, max_quantity=None):
     try:
         quantity = int(quantity)
     except (TypeError, ValueError):
-        raise InvalidItemQuantity("can't convert quantity to an integer")
-    if quantity <= 0:
-        raise InvalidItemQuantity('item quantity must be positive')
+        raise NonConvertibleItemQuantity(quantity=quantity)
+    if quantity == 0:
+        raise ZeroItemQuantity()
+    if quantity < 0:
+        raise NegativeItemQuantity(quantity=quantity)
     if max_quantity and quantity > max_quantity:
-        raise InvalidItemQuantity('{} exceeds the allowed maximum of {}'
-                                  ''.format(quantity, max_quantity))
+        raise TooLargeItemQuantity(quantity=quantity, max_quantity=max_quantity)
     return quantity
 
 
 class CartException(Exception):
     """Base class for cart exceptions."""
+    msg_template = ''
+
+    def __init__(self, **kwargs):
+        self.kwargs = kwargs
+        self.msg = self.msg_template.format(**kwargs)
+
+    def __str__(self):
+        return self.msg
 
 
 class InvalidItemQuantity(CartException):
-    """Provided item quantity is invalid."""
+    """Base class for exceptions related to invalid item quantity."""
+    msg_template = "item quantity is invalid ({quantity})"
+
+
+class NonConvertibleItemQuantity(InvalidItemQuantity):
+    """Provided item quantity can't be converted to an integer."""
+    msg_template = "can't convert quantity to an integer ({quantity})"
+
+
+class NegativeItemQuantity(InvalidItemQuantity):
+    """Provided item quantity is negative."""
+    msg_template = 'item quantity is negative ({quantity})'
+
+
+class ZeroItemQuantity(InvalidItemQuantity):
+    """Provided item quantity is zero."""
+    msg_template = 'item quantity must not be zero'
+
+
+class TooLargeItemQuantity(InvalidItemQuantity):
+    """Provided item quantity exceeds allowed limit."""
+    msg_template = '{quantity} exceeds the allowed maximum of {max_quantity}'
 
 
 class ItemNotInDatabase(CartException):
     """Database doesn't contain an item with the given primary key."""
+    msg_template = "database doesn't have an item with pk {pk}"
 
 
 class ItemNotInCart(CartException):
     """Item with the given pk is not in the cart."""
-    msg_template = "cart doesn't contain an item with pk '{}'"
-
-    def __init__(self, pk, *args):  #pylint:disable=super-init-not-called
-        msg = self.msg_template.format(pk)
-        self.args = (msg,) + args
-
+    msg_template = "cart doesn't contain an item with pk {pk}"
