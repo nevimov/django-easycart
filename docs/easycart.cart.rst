@@ -1,5 +1,5 @@
-easycart.cart module
-====================
+easycart.cart
+=============
 
 .. automodule:: easycart.cart
 
@@ -22,8 +22,8 @@ BaseItem
     :undoc-members:
 
 
-Module Exceptions
------------------
+Exceptions
+----------
 
 .. autoclass:: CartException
     :show-inheritance:

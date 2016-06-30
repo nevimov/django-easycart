@@ -1,5 +1,5 @@
-easycart.views module
-=====================
+easycart.views
+==============
 
 .. automodule:: easycart.views
 
