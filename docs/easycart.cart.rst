@@ -36,3 +36,15 @@ Exceptions
 
 .. autoclass:: ItemNotInDatabase
     :show-inheritance:
+
+.. autoclass:: NegativeItemQuantity
+    :show-inheritance:
+
+.. autoclass:: NonConvertibleItemQuantity
+    :show-inheritance:
+
+.. autoclass:: TooLargeItemQuantity
+    :show-inheritance:
+
+.. autoclass:: ZeroItemQuantity
+    :show-inheritance:
