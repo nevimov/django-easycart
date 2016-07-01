@@ -24,7 +24,7 @@ class TestViews(TestCase):
     def test_add_item(self):
         self.check_response(
             'cart-add',
-            {'pk': '1', 'quantity': '5'},
+            {'pk': 1, 'quantity': 5},
             {'items': {'1': {'price': '3.00', 'quantity': 15, 'total': '45.00'},
                        '2': {'price': '5.00', 'quantity': 12, 'total': '60.00'},
                        '3': {'price': '1.50', 'quantity': 6, 'total': '9.00'},
@@ -36,7 +36,7 @@ class TestViews(TestCase):
     def test_remove_item(self):
         self.check_response(
             'cart-remove',
-            {'pk': '1'},
+            {'pk': 1},
             {'items': {'2': {'price': '5.00', 'quantity': 12, 'total': '60.00'},
                        '3': {'price': '1.50', 'quantity': 6, 'total': '9.00'},
                        '4': {'price': '2.00', 'quantity': 1, 'total': '2.00'}},
@@ -47,7 +47,7 @@ class TestViews(TestCase):
     def test_change_item_quantity(self):
         self.check_response(
             'cart-change-quantity',
-            {'pk': '1', 'quantity': '5'},
+            {'pk': 1, 'quantity': 5},
             {'items': {'1': {'price': '3.00', 'quantity': 5, 'total': '15.00'},
                        '2': {'price': '5.00', 'quantity': 12, 'total': '60.00'},
                        '3': {'price': '1.50', 'quantity': 6, 'total': '9.00'},
