@@ -35,6 +35,7 @@ class TestBaseItem(TestCase):
     def test_instance_attrs_are_ok(self):
         item = BaseItem(self.obj, 3)
         self.assertIs(item.obj, self.obj)
+        self.assertIsInstance(item.cart, Cart)
         self.assertEqual(item.price, 100)
         self.assertEqual(item.quantity, 3)
         self.assertEqual(item.total, 300)

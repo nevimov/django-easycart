@@ -46,9 +46,10 @@ class BaseItem(object):
     ZeroItemQuantity
 
     """
+    cart = None  # Set during instantiation of the cart class
+    """A reference to the instance of the cart class holding the item."""
     PRICE_ATTR = 'price'
     """str: The name of the `obj` attribute containing the item's price."""
-
     max_quantity = None
     """The maximum quantity allowed per item.
 
@@ -179,6 +180,7 @@ class BaseCart(object):
     _stale_pks = None
 
     def __init__(self, request):
+        self.item_class.cart = self
         self.request = request
         session_data = request.session.setdefault(session_key, {})
         session_items = session_data.setdefault('items', {})
