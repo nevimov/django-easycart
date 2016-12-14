@@ -9,6 +9,14 @@ Unreleased_
 -----------
 
 
+0.4.0_ -- 2016-12-14
+--------------------
+
+Added
+~~~~~
+* Ability to access the cart from the cart item through attribute 'cart'.
+
+
 0.3.0_ -- 2016-07-02
 --------------------
 
@@ -47,4 +55,5 @@ Fixed
 .. _0.1.1: https://github.com/nevimov/django-easycart/compare/v0.1.0...v0.1.1
 .. _0.2.0: https://github.com/nevimov/django-easycart/compare/v0.1.1...v0.2.0
 .. _0.3.0: https://github.com/nevimov/django-easycart/compare/v0.2.0...v0.3.0
-.. _unreleased: https://github.com/nevimov/django-easycart/compare/v0.2.0...master
+.. _0.4.0: https://github.com/nevimov/django-easycart/compare/v0.3.0...v0.4.0
+.. _unreleased: https://github.com/nevimov/django-easycart/compare/v0.4.0...master
