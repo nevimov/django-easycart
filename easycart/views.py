@@ -23,6 +23,20 @@ Note
 ----
 All of the views in this module accept only POST requests.
 
+
+Warning
+-------
+The views in this module do not protect you from race conditions, which
+may occur if, for example, server receives requests changing the cart
+state almost simultaneously. It seems there's no good
+platform-independent way to do it (see `this issue
+<https://github.com/nevimov/django-easycart/issues/8>`_).
+
+For now, I suggest to use JavaScript to ensure that you don't make
+new requests to the cart until you have a response for the current one.
+Feel free to reopen the issue, if you have any suggestions on how to
+improve the situation.
+
 """
 from importlib import import_module
 
