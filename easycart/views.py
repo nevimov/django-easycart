@@ -47,6 +47,7 @@ from django.views.generic import View
 from easycart.cart import CartException
 
 __all__ = [
+    'ListCart',
     'AddItem',
     'RemoveItem',
     'ChangeItemQuantity',
@@ -94,6 +95,10 @@ class CartView(View):
             return JsonResponse(dict({'error': exc.__class__.__name__},
                                      **exc.kwargs))
         return cart.encode()
+
+class ListCart(CartView):
+    """Returns the cart content without doing any change."""
+    action = 'noop'
 
 
 class AddItem(CartView):

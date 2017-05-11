@@ -189,6 +189,30 @@ class BaseCart(object):
         self.total_price = session_data.get('totalPrice', 0)
         if self._stale_pks:
             self.handle_stale_items(self._stale_pks)
+            
+    def noop(self, **kwargs):
+        """Doesn't do anything.
+
+        Parameters
+        ----------
+        pk : str or int
+            The primary key of the item.
+        quantity : int-convertible
+            A number of units of to add.
+        **kwargs
+            Extra keyword arguments to pass to the item class
+            constructor.
+
+        Raises
+        ------
+        ItemNotInDatabase
+        NegativeItemQuantity
+        NonConvertibleItemQuantity
+        TooLargeItemQuantity
+        ZeroItemQuantity
+
+        """
+        self.update()
 
     def add(self, pk, quantity=1, **kwargs):
         """Add an item to the cart.
