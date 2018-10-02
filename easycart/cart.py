@@ -85,7 +85,7 @@ class BaseItem(object):
         main_args = 'obj={}, quantity={}'.format(self.obj, self.quantity)
         extra_args = ['{}={}'.format(k, getattr(self, k)) for k in self._kwargs]
         args_repr = ', '.join([main_args] + extra_args)
-        return  '<CartItem: ' + args_repr + '>'
+        return '<CartItem: ' + args_repr + '>'
 
     @property
     def quantity(self):
@@ -527,7 +527,7 @@ def _clean_quantity(quantity, max_quantity=None):
         raise ZeroItemQuantity()
     if quantity < 0:
         raise NegativeItemQuantity(quantity=quantity)
-    if max_quantity and quantity > max_quantity:
+    if max_quantity is not None and quantity > max_quantity:
         raise TooLargeItemQuantity(quantity=quantity, max_quantity=max_quantity)
     return quantity
 
