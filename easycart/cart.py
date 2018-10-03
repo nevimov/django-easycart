@@ -71,9 +71,9 @@ class BaseItem(object):
     """
 
     def __init__(self, obj, quantity=1, **kwargs):
+        self.obj = obj
         self._quantity = self.clean_quantity(quantity)
         self.price = getattr(obj, self.PRICE_ATTR)
-        self.obj = obj
         for key, value in kwargs.items():
             setattr(self, key, value)
         self._kwargs = kwargs
