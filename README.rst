@@ -1,6 +1,8 @@
 Easycart
 ========
 
+**WARNING: This project is not maintained anymore.**
+
 Easycart is a flexible session-based shopping cart application for Django.
 It provides plenty of hooks for overriding and extending the way it works.
 
